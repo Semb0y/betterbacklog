@@ -1,5 +1,5 @@
 import Resolver from "@forge/resolver";
-import { api, route } from "@forge/api";
+import { route } from "@forge/api";
 import Anthropic from "@anthropic-ai/sdk";
 
 const anthropic = new Anthropic({

@@ -6,7 +6,8 @@
   "private": true,
   "devDependencies": {
     "eslint": "^8.56.0",
-    "eslint-plugin-react-hooks": "^4.6.0"
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "prettier": "^3.7.4"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.2",
@@ -15,6 +16,10 @@
     "@forge/resolver": "^1.7.1"
   },
   "scripts": {
+    "format": "prettier --write \"**/*.{js,jsx,json,md,yml,yaml}\"",
+    "format:check": "prettier --check \"**/*.{js,jsx,json,md,yml,yaml}\"",
+    "format:frontend": "cd static/frontend && npm run format",
+    "lint": "forge lint",
     "dev": "npx concurrently \"cd static/frontend && npm start\" \"forge tunnel\"",
     "build-front": "cd static/frontend && npm run build",
     "deploy": "npm run build-front && forge deploy"

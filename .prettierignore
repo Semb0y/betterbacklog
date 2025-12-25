@@ -1,0 +1,17 @@
+# Dépendances
+node_modules
+static/frontend/node_modules
+
+# Build
+static/frontend/build
+dist
+
+# Forge
+.forge
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store

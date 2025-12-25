@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { view, invoke } from "@forge/bridge";
-import { useAnalysis } from "../hooks/useAnalysis";
-import Button from "./ui/Button";
-import { parseDescription } from "../utils";
+import { useAnalysis } from "../../services/hooks";
+import { parseDescription } from "../../services/utils";
+import { Button } from "../ui/Button/Button";
+import styles from "./Analyzer.module.css";
 
 export const Analyzer = () => {
   const { runAnalysis } = useAnalysis();
@@ -24,7 +25,6 @@ export const Analyzer = () => {
 
     try {
       const analysisData = await runAnalysis(issueKey);
-
       const parsedDescription = parseDescription(analysisData.description);
 
       const result = await invoke("improveBacklog", {
@@ -41,26 +41,20 @@ export const Analyzer = () => {
   };
 
   return (
-    <div style={{ padding: "10px" }} >
+    <div className={styles.container}>
       <Button
         onClick={handleAnalyzeAndImprove}
-        disabled={loading || !issueKey}
-        label={
-          loading ? "Chargement" : "Analyser et améliorer le ticket"
-        }
+        disabled={!issueKey}
+        loading={loading}
       />
 
       {aiAnalysis && (
-        <div
-          style={{
-            marginTop: "20px",
-            padding: "10px",
-            backgroundColor: "#f4f5f7",
-            borderRadius: "5px",
-          }}
-        >
-          <h4>💡 Suggestion d'amelioration :</h4>
-          <div style={{ whiteSpace: "pre-wrap" }}>{aiAnalysis}</div>
+        <div className={styles.resultCard}>
+          <h4 className={styles.resultHeader}>
+            <span className={styles.resultIcon}>💡</span>
+            Suggestion d'amélioration
+          </h4>
+          <div className={styles.resultContent}>{aiAnalysis}</div>
         </div>
       )}
     </div>
