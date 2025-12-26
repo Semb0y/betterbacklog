@@ -13,7 +13,7 @@ export const fetchAnalysis = async (issueKey) => {
       updated: data.fields.updated,
     };
   } catch (error) {
-    console.error("Erreur lors de la récupération:", error);
+    console.error("Error fetching analysis", error);
     throw error;
   }
 };

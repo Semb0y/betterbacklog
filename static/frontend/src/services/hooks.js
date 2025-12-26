@@ -1,23 +1,52 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { fetchAnalysis } from "../api/index";
 
-export const useAnalysis = () => {
-  const [status, setStatus] = useState("idle");
-  const [data, setData] = useState(null);
+export const useIssueData = () => {
+  const [issueData, setIssueData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const runAnalysis = async (issueKey) => {
-    setStatus("loading");
+  const loadIssueData = useCallback(async (issueKey) => {
+    setIsLoading(true);
+    setError(null);
+
     try {
       const result = await fetchAnalysis(issueKey);
-      setData(result);
-      setStatus("success");
+      setIssueData(result);
       return result;
     } catch (err) {
-      console.error(err);
-      setStatus("error");
+      console.error("Error loading issue data:", err);
+      setError(err.message);
       throw err;
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, []);
 
-  return { data, status, runAnalysis };
+  const refreshLastUpdated = useCallback(async (issueKey) => {
+    try {
+      const result = await fetchAnalysis(issueKey);
+      setIssueData(result);
+      return result.updated;
+    } catch (err) {
+      console.error("Error refreshing last updated date:", err);
+      return null;
+    }
+  }, []);
+
+  const reset = useCallback(() => {
+    setIssueData(null);
+    setIsLoading(false);
+    setError(null);
+  }, []);
+
+  return {
+    issueData,
+    lastUpdated: issueData?.updated || null,
+    isLoading,
+    error,
+    runAnalysis: loadIssueData,
+    refreshLastUpdated,
+    reset,
+  };
 };

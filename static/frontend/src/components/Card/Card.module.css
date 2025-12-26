@@ -1,0 +1,37 @@
+.resultCard {
+  margin-top: 20px;
+  padding: 15px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 12px;
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.3s ease-in;
+}
+
+.resultHeader {
+  margin: 0 0 10px 0;
+  color: #667eea;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.resultIcon {
+  font-size: 20px;
+}
+
+.resultContent {
+  white-space: pre-wrap;
+  color: #2d3748;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.lastUpdated {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #718096;
+  text-align: right;
+}

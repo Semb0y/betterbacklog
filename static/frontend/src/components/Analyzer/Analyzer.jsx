@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { view, invoke } from "@forge/bridge";
-import { useAnalysis } from "../../services/hooks";
-import { parseDescription } from "../../services/utils";
-import { Button } from "../ui/Button/Button";
+import { useIssueData } from "../../services/hooks";
+import { parseDescription, formatDate } from "../../services/utils";
+import { Button } from "../Button/Button";
+import { Card } from "../Card/Card";
 import styles from "./Analyzer.module.css";
 
 export const Analyzer = () => {
-  const { runAnalysis } = useAnalysis();
+  const { runAnalysis, lastUpdated, refreshLastUpdated } = useIssueData();
   const [issueKey, setIssueKey] = useState(null);
-  const [aiAnalysis, setAiAnalysis] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [suggestion, setSuggestion] = useState(null);
+  const [analysisDate, setAnalysisDate] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(true);
+  const [isOutdated, setIsOutdated] = useState(false);
 
   useEffect(() => {
     view.getContext().then((context) => {
@@ -17,46 +21,87 @@ export const Analyzer = () => {
     });
   }, []);
 
-  const handleAnalyzeAndImprove = async () => {
+  useEffect(() => {
     if (!issueKey) return;
 
-    setLoading(true);
-    setAiAnalysis(null);
+    refreshLastUpdated(issueKey);
+    const interval = setInterval(() => refreshLastUpdated(issueKey), 5000);
+
+    return () => clearInterval(interval);
+  }, [issueKey, refreshLastUpdated]);
+
+  useEffect(() => {
+    if (!issueKey) {
+      setIsSyncing(false);
+      return;
+    }
+
+    const syncStorageWithJira = async () => {
+      setIsSyncing(true);
+      try {
+        const savedData = await invoke("getLastAnalysis", { issueKey });
+
+        if (savedData) {
+          setSuggestion(savedData.improvedText);
+          setAnalysisDate(formatDate(savedData.date));
+
+          if (lastUpdated) {
+            const hasBeenModified =
+              new Date(lastUpdated) > new Date(savedData.date);
+            setIsOutdated(hasBeenModified);
+          }
+        }
+      } catch (err) {
+        console.error("Error syncing storage:", err);
+      } finally {
+        setIsSyncing(false);
+      }
+    };
+
+    syncStorageWithJira();
+  }, [issueKey, lastUpdated]);
+
+  const handleAnalyzeAction = async () => {
+    if (!issueKey) return;
+    setIsLoading(true);
 
     try {
-      const analysisData = await runAnalysis(issueKey);
-      const parsedDescription = parseDescription(analysisData.description);
+      const currentIssue = await runAnalysis(issueKey);
 
       const result = await invoke("improveBacklog", {
-        title: analysisData.title,
-        description: parsedDescription,
+        issueKey,
+        title: currentIssue.title,
+        description: parseDescription(currentIssue.description),
       });
 
-      setAiAnalysis(result.improvedText);
+      setSuggestion(result.improvedText);
+      setAnalysisDate(formatDate(result.date));
+      setIsOutdated(false);
     } catch (e) {
-      console.error(e);
+      console.error("Error during AI analysis:", e);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
+
+  const isActionDisabled =
+    !issueKey || isLoading || isSyncing || (suggestion && !isOutdated);
 
   return (
     <div className={styles.container}>
       <Button
-        onClick={handleAnalyzeAndImprove}
-        disabled={!issueKey}
-        loading={loading}
+        onClick={handleAnalyzeAction}
+        disabled={isActionDisabled}
+        loading={isLoading || isSyncing}
+        isOutdated={isOutdated}
+        hasAnalysis={!!suggestion}
       />
 
-      {aiAnalysis && (
-        <div className={styles.resultCard}>
-          <h4 className={styles.resultHeader}>
-            <span className={styles.resultIcon}>💡</span>
-            Suggestion d'amélioration
-          </h4>
-          <div className={styles.resultContent}>{aiAnalysis}</div>
-        </div>
-      )}
+      <Card
+        suggestion={suggestion}
+        date={analysisDate}
+        isOutdated={isOutdated}
+      />
     </div>
   );
 };

@@ -40,3 +40,13 @@ export const parseDescription = (description) => {
     .filter(Boolean)
     .join("\n\n");
 };
+
+export const formatDate = (date = new Date(), locale = "en-US") => {
+  return new Intl.DateTimeFormat(locale, {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(date));
+};

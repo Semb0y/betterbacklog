@@ -1,6 +1,7 @@
 import Resolver from "@forge/resolver";
-import { route } from "@forge/api";
+import { requestJira, route, storage } from "@forge/api";
 import Anthropic from "@anthropic-ai/sdk";
+import { SYSTEM_PROMPT } from "./prompts";
 
 const anthropic = new Anthropic({
   apiKey: process.env.CLAUDE_API_KEY,
@@ -8,14 +9,16 @@ const anthropic = new Anthropic({
 
 const resolver = new Resolver();
 
+resolver.define("getLastAnalysis", async (req) => {
+  const { issueKey } = req.payload;
+  return await storage.get(`analysis-${issueKey}`);
+});
+
 resolver.define("fetchAnalysis", async (req) => {
   const { issueKey } = req.payload;
-  const response = await api
-    .asApp()
-    .requestJira(
-      route`/rest/api/3/issue/${issueKey}?fields=summary,description`
-    );
-
+  const response = await requestJira(
+    route`/rest/api/3/issue/${issueKey}?fields=summary,description,updated`
+  );
   if (!response.ok) {
     throw new Error("Erreur lors de la récupération du ticket Jira");
   }
@@ -24,17 +27,18 @@ resolver.define("fetchAnalysis", async (req) => {
   return {
     title: data.fields.summary,
     description: data.fields.description,
+    updated: data.fields.updated,
   };
 });
 
 resolver.define("improveBacklog", async (req) => {
-  const { title, description } = req.payload;
+  const { title, description, issueKey } = req.payload;
 
   const prompt = `Voici un ticket Jira. 
   Titre: ${title}
   Description: ${description}
   
-  Peux-tu améliorer ce ticket en suivant la structure User Story (En tant que... Je souhaite... Afin de...) et ajouter des critères d'acceptation clairs ?`;
+  ${SYSTEM_PROMPT}`;
 
   try {
     const msg = await anthropic.messages.create({
@@ -43,8 +47,17 @@ resolver.define("improveBacklog", async (req) => {
       messages: [{ role: "user", content: prompt }],
     });
 
+    const improvedText = msg.content[0].text;
+    const analysisDate = new Date().toISOString();
+
+    await storage.set(`analysis-${issueKey}`, {
+      improvedText,
+      date: analysisDate,
+    });
+
     return {
-      improvedText: msg.content[0].text,
+      improvedText,
+      date: analysisDate,
       additionalInfo: "Improvement made using Claude AI",
     };
   } catch (error) {

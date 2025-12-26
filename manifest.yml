@@ -27,11 +27,13 @@ permissions:
   external:
     fetch:
       backend:
-        - "https://api.anthropic.com"
+        - address: https://api.anthropic.com
   content:
     styles:
-      - "unsafe-inline"
+      - unsafe-inline
     scripts:
-      - "unsafe-inline"
+      - unsafe-inline
   scopes:
-    - "read:jira-work"
+    - read:jira-work
+    - storage:app
+    - read:jira-user
