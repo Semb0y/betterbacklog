@@ -8,43 +8,39 @@ export const Button = ({
   loading,
   isOutdated,
   hasAnalysis,
+  isRetrying, // ✅ Nouveau prop
 }) => {
-  const label = useMemo(() => {
-    if (loading) return CONTENT.STATUS.LOADING;
-    if (isOutdated) return CONTENT.STATUS.OUTDATED;
-    if (hasAnalysis) return CONTENT.STATUS.UP_TO_DATE;
-    return CONTENT.STATUS.DEFAULT;
-  }, [loading, isOutdated, hasAnalysis]);
+  const getButtonText = () => {
+    if (isRetrying) return "Retrying...";
+    if (loading) return "Analyzing...";
+    if (hasAnalysis && !isOutdated) return "Analysis up to date";
+    if (isOutdated) return "Issue modified - Re-analyze";
+    return "Improve ticket";
+  };
 
-  const icon = useMemo(() => {
+  const getIcon = () => {
+    if (isRetrying) return "🔄";
     if (isOutdated) return "🔄";
-    if (hasAnalysis) return "✅";
+    if (hasAnalysis && !isOutdated) return "✅";
     return "✨";
-  }, [isOutdated, hasAnalysis]);
-
-  const buttonClassName = `
-    ${styles.button} 
-    ${loading ? styles.isLoading : ""} 
-    ${disabled && !loading ? styles.isDisabled : ""} 
-    ${isOutdated ? styles.isOutdated : ""}
-  `.trim();
+  };
 
   return (
     <button
       onClick={onClick}
-      disabled={disabled || loading}
-      className={buttonClassName}
+      disabled={disabled || loading || isRetrying}
+      className={`${styles.button} ${loading || isRetrying ? styles.isLoading : ""}`}
     >
       <span className={styles.content}>
-        {loading ? (
+        {loading || isRetrying ? (
           <>
             <span className={styles.spinner} />
-            <span>{label}</span>
+            <span>{getButtonText()}</span>
           </>
         ) : (
           <>
-            <span className={styles.icon}>{icon}</span>
-            <span>{label}</span>
+            <span className={styles.icon}>{getIcon()}</span>
+            <span>{getButtonText()}</span>
           </>
         )}
       </span>
