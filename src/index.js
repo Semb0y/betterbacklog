@@ -20,7 +20,7 @@ resolver.define("fetchAnalysis", async (req) => {
     route`/rest/api/3/issue/${issueKey}?fields=summary,description,updated`
   );
   if (!response.ok) {
-    throw new Error("Erreur lors de la récupération du ticket Jira");
+    throw new Error("Error fetching issue from Jira");
   }
 
   const data = await response.json();
@@ -34,11 +34,11 @@ resolver.define("fetchAnalysis", async (req) => {
 resolver.define("improveBacklog", async (req) => {
   const { title, description, issueKey } = req.payload;
 
-  const prompt = `Voici un ticket Jira. 
-  Titre: ${title}
+  const prompt = `This is a Jira issue. 
+  Title: ${title}
   Description: ${description}
   
-  ${SYSTEM_PROMPT}`;
+  ${process.env.SYSTEM_PROMPT}`;
 
   try {
     const msg = await anthropic.messages.create({
@@ -61,8 +61,8 @@ resolver.define("improveBacklog", async (req) => {
       additionalInfo: "Improvement made using Claude AI",
     };
   } catch (error) {
-    console.error("Détail Erreur Claude:", error.message);
-    throw new Error(`L'IA n'a pas pu répondre : ${error.message}`);
+    console.error("Claude error details:", error.message);
+    throw new Error(`The AI could not respond: ${error.message}`);
   }
 });
 

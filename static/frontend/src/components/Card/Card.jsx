@@ -1,8 +1,15 @@
+import React from "react";
 import styles from "./Card.module.css";
 import { CONTENT } from "../../services/constants";
 
 export const Card = ({ suggestion, date, isOutdated }) => {
-  if (!suggestion) return null;
+  if (!suggestion || typeof suggestion === "string") return null;
+
+  const categories = [
+    { key: "satisfied", label: "Satisfied", className: styles.satisfied },
+    { key: "failed", label: "Failed", className: styles.failed },
+    { key: "partial", label: "Needs Improvement", className: styles.partial },
+  ];
 
   return (
     <div className={styles.cardContainer}>
@@ -11,14 +18,25 @@ export const Card = ({ suggestion, date, isOutdated }) => {
       </p>
 
       <div className={styles.resultCard}>
-        <h4 className={styles.resultHeader}>
-          <span className={styles.resultIcon}>💡</span>
-          {CONTENT.CARD.TITLE}
-        </h4>
-        <div className={styles.resultContent}>{suggestion}</div>
+        <h4 className={styles.resultHeader}>✨ {CONTENT.CARD.TITLE}</h4>
+
+        <div className={styles.sections}>
+          {categories.map(
+            (cat) =>
+              suggestion[cat.key]?.length > 0 && (
+                <div key={cat.key} className={cat.className}>
+                  {suggestion[cat.key].map((line, index) => (
+                    <p key={index} className={styles.analysisLine}>
+                      {line}
+                    </p>
+                  ))}
+                </div>
+              )
+          )}
+        </div>
 
         {date && (
-          <div className={styles.lastUpdated}>
+          <div className={styles.footer}>
             {CONTENT.CARD.FOOTER}
             {date}
           </div>

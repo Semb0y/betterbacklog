@@ -1,37 +1,40 @@
 .resultCard {
   margin-top: 20px;
-  padding: 15px;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  border-radius: 12px;
-  border: 1px solid rgba(102, 126, 234, 0.2);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  animation: fadeIn 0.3s ease-in;
+  background-color: var(--ds-surface-raised, #ffffff);
+  border: 1px solid var(--ds-border, #e5e5e5);
+  border-radius: 3px;
+  padding: 12px;
 }
 
-.resultHeader {
-  margin: 0 0 10px 0;
-  color: #667eea;
+.sections {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 16px;
-  font-weight: 600;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
 }
 
-.resultIcon {
-  font-size: 20px;
-}
-
-.resultContent {
-  white-space: pre-wrap;
-  color: #2d3748;
-  line-height: 1.6;
+.analysisLine {
+  margin: 4px 0;
   font-size: 14px;
+  line-height: 1.4;
 }
 
-.lastUpdated {
-  margin-top: 10px;
-  font-size: 12px;
-  color: #718096;
-  text-align: right;
+.satisfied {
+  color: var(--ds-text-success, #216e4e);
+}
+
+.failed {
+  color: var(--ds-text-danger, #ae2a19);
+}
+
+.partial {
+  color: var(--ds-text-warning, #974f0c);
+}
+
+.footer {
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--ds-text-subtle, #6b778c);
+  border-top: 1px solid var(--ds-border-subtle, #f4f5f7);
+  padding-top: 8px;
 }

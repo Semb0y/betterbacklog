@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { view, invoke } from "@forge/bridge";
 import { useIssueData } from "../../services/hooks";
-import { parseDescription, formatDate } from "../../services/utils";
+import {
+  parseDescription,
+  formatDate,
+  parseAnalysisResponse,
+} from "../../services/utils";
 import { Button } from "../Button/Button";
 import { Card } from "../Card/Card";
 import styles from "./Analyzer.module.css";
@@ -41,8 +45,10 @@ export const Analyzer = () => {
       try {
         const savedData = await invoke("getLastAnalysis", { issueKey });
 
-        if (savedData) {
-          setSuggestion(savedData.improvedText);
+        if (savedData && savedData.improvedText) {
+          const sorted = parseAnalysisResponse(savedData.improvedText);
+          setSuggestion(sorted);
+
           setAnalysisDate(formatDate(savedData.date));
 
           if (lastUpdated) {
@@ -67,14 +73,15 @@ export const Analyzer = () => {
 
     try {
       const currentIssue = await runAnalysis(issueKey);
-
       const result = await invoke("improveBacklog", {
         issueKey,
         title: currentIssue.title,
         description: parseDescription(currentIssue.description),
       });
 
-      setSuggestion(result.improvedText);
+      const sortedAnalysis = parseAnalysisResponse(result.improvedText);
+      setSuggestion(sortedAnalysis);
+
       setAnalysisDate(formatDate(result.date));
       setIsOutdated(false);
     } catch (e) {
@@ -89,13 +96,15 @@ export const Analyzer = () => {
 
   return (
     <div className={styles.container}>
-      <Button
-        onClick={handleAnalyzeAction}
-        disabled={isActionDisabled}
-        loading={isLoading || isSyncing}
-        isOutdated={isOutdated}
-        hasAnalysis={!!suggestion}
-      />
+      {(!suggestion || isOutdated) && (
+        <Button
+          onClick={handleAnalyzeAction}
+          disabled={isActionDisabled}
+          loading={isLoading || isSyncing}
+          isOutdated={isOutdated}
+          hasAnalysis={!!suggestion}
+        />
+      )}
 
       <Card
         suggestion={suggestion}

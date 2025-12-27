@@ -50,3 +50,26 @@ export const formatDate = (date = new Date(), locale = "en-US") => {
     minute: "2-digit",
   }).format(new Date(date));
 };
+
+export const parseAnalysisResponse = (aiResponse) => {
+  const lines = aiResponse.split("\n").filter((line) => line.trim() !== "");
+
+  const categories = {
+    satisfied: [], // ✅
+    failed: [], // ❌
+    partial: [], // ⚠️
+  };
+
+  lines.forEach((line) => {
+    const trimmedLine = line.trim();
+    if (trimmedLine.startsWith("✅")) {
+      categories.satisfied.push(trimmedLine);
+    } else if (trimmedLine.startsWith("❌")) {
+      categories.failed.push(trimmedLine);
+    } else if (trimmedLine.startsWith("⚠️")) {
+      categories.partial.push(trimmedLine);
+    }
+  });
+
+  return categories;
+};
