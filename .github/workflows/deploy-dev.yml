@@ -1,4 +1,5 @@
 name: Deploy to Development
+
 on:
   push:
     branches:
@@ -6,7 +7,9 @@ on:
 
 jobs:
   deploy:
+    name: Build and Deploy
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -19,10 +22,20 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Deploy to Forge
+      - name: Install Forge CLI and Configure
         run: |
           npm install -g @forge/cli
+          forge settings set usage-analytics true
+
+      - name: Deploy to Forge (Development)
+        run: |
           forge deploy -e development --non-interactive
+        env:
+          FORGE_EMAIL: ${{ secrets.FORGE_EMAIL }}
+          FORGE_API_TOKEN: ${{ secrets.FORGE_API_TOKEN }}
+
+      - name: Set Anthropic API Key
+        run: |
           forge variables set --encrypt ANTHROPIC_API_KEY ${{ secrets.ANTHROPIC_API_KEY }} -e development
         env:
           FORGE_EMAIL: ${{ secrets.FORGE_EMAIL }}
