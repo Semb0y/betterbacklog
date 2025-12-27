@@ -9,6 +9,7 @@ import {
 import { Button } from "../Button/Button";
 import { Card } from "../Card/Card";
 import styles from "./Analyzer.module.css";
+import { CONTENT } from "../../services/constants";
 
 export const Analyzer = () => {
   const { runAnalysis, lastUpdated, refreshLastUpdated } = useIssueData();
@@ -97,13 +98,17 @@ export const Analyzer = () => {
   return (
     <div className={styles.container}>
       {(!suggestion || isOutdated) && (
-        <Button
-          onClick={handleAnalyzeAction}
-          disabled={isActionDisabled}
-          loading={isLoading || isSyncing}
-          isOutdated={isOutdated}
-          hasAnalysis={!!suggestion}
-        />
+        <>
+          <Button
+            onClick={handleAnalyzeAction}
+            disabled={isActionDisabled}
+            loading={isLoading || isSyncing}
+            isOutdated={isOutdated}
+            hasAnalysis={!!suggestion}
+          />
+
+          <p className={styles.disclaimer}>{CONTENT.DISCLAIMER}</p>
+        </>
       )}
 
       <Card

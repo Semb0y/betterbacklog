@@ -13,4 +13,6 @@ export const CONTENT = {
     TITLE: "Improvement Suggestion",
     FOOTER: "Last analysis: ",
   },
+  DISCLAIMER:
+    "By clicking, the issue content will be sent to an AI service for analysis.",
 };
