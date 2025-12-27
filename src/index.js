@@ -1,10 +1,9 @@
 import Resolver from "@forge/resolver";
 import { requestJira, route, storage } from "@forge/api";
 import Anthropic from "@anthropic-ai/sdk";
-import { SYSTEM_PROMPT } from "./prompts";
 
 const anthropic = new Anthropic({
-  apiKey: process.env.CLAUDE_API_KEY,
+  apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
 const resolver = new Resolver();
