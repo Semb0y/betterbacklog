@@ -20,8 +20,8 @@ modules:
 resources:
   - key: main
     path: static/frontend/build
-    tunnel:
-      port: 3000
+    # tunnel:
+    #   port: 3000
 
 permissions:
   external:
