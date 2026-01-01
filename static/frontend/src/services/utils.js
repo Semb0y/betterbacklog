@@ -52,24 +52,39 @@ export const formatDate = (date = new Date(), locale = "en-US") => {
 };
 
 export const parseAnalysisResponse = (aiResponse) => {
-  const lines = aiResponse.split("\n").filter((line) => line.trim() !== "");
+  if (typeof aiResponse === "object" && aiResponse !== null) {
+    return aiResponse;
+  }
 
-  const categories = {
-    satisfied: [], // ✅
-    failed: [], // ❌
-    partial: [], // ⚠️
-  };
+  if (typeof aiResponse === "string") {
+    try {
+      const parsed = JSON.parse(aiResponse);
+      return parsed;
+    } catch (error) {
+      console.error("Failed to parse analysis response as JSON:", error);
 
-  lines.forEach((line) => {
-    const trimmedLine = line.trim();
-    if (trimmedLine.startsWith("✅")) {
-      categories.satisfied.push(trimmedLine);
-    } else if (trimmedLine.startsWith("❌")) {
-      categories.failed.push(trimmedLine);
-    } else if (trimmedLine.startsWith("⚠️")) {
-      categories.partial.push(trimmedLine);
+      const lines = aiResponse.split("\n").filter((line) => line.trim() !== "");
+
+      const categories = {
+        satisfied: [],
+        failed: [],
+        partial: [],
+      };
+
+      lines.forEach((line) => {
+        const trimmedLine = line.trim();
+        if (trimmedLine.startsWith("✅")) {
+          categories.satisfied.push(trimmedLine);
+        } else if (trimmedLine.startsWith("❌")) {
+          categories.failed.push(trimmedLine);
+        } else if (trimmedLine.startsWith("⚠️")) {
+          categories.partial.push(trimmedLine);
+        }
+      });
+
+      return categories;
     }
-  });
+  }
 
-  return categories;
+  return null;
 };

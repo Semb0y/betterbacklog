@@ -22,6 +22,7 @@
     "lint": "forge lint",
     "dev": "npx concurrently \"cd static/frontend && npm start\" \"forge tunnel\"",
     "build-front": "cd static/frontend && npm run build",
-    "deploy": "npm run build-front && forge deploy"
+    "deploy": "npm run build-front && forge deploy",
+    "prompt-update-dev": "forge variables set SYSTEM_PROMPT --environment development \"$(cat prompt.txt)\""
   }
 }

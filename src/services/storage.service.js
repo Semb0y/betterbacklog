@@ -29,11 +29,20 @@ export class StorageService {
 
     await storage.set(key, analysisData);
 
-    Logger.info("StorageService.saveAnalysis", "Saved analysis", {
+    const logData = {
       issueKey,
       date: analysisData.date,
-      textLength: improvedText.length,
-    });
+    };
+
+    if (typeof improvedText === "object") {
+      logData.hasUserStory = !!improvedText.userStory;
+      logData.criteriaCount = improvedText.acceptanceCriteria?.length || 0;
+      logData.notesCount = improvedText.technicalNotes?.length || 0;
+    } else {
+      logData.textLength = improvedText.length;
+    }
+
+    Logger.info("StorageService.saveAnalysis", "Saved analysis", logData);
 
     return analysisData;
   }

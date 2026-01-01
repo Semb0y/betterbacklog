@@ -2,16 +2,13 @@ import Anthropic from "@anthropic-ai/sdk";
 import { MODELS, ERROR_MESSAGES } from "../config/constants.js";
 import { AppError } from "../utils/error.handler.js";
 import { Logger } from "../utils/logger.js";
+import { validateAnalysisResponse } from "../validators.js";
 
 export class AnthropicService {
   constructor() {
     this.client = new Anthropic({
       apiKey: process.env.ANTHROPIC_API_KEY,
     });
-
-    this.systemPrompt =
-      process.env.SYSTEM_PROMPT ||
-      "You are a helpful assistant that improves Jira issue descriptions.";
   }
 
   async analyzeIssue(title, description) {
@@ -22,8 +19,8 @@ export class AnthropicService {
 
     const message = await this.client.messages.create({
       model: MODELS.HAIKU,
-      max_tokens: 1024,
-      system: this.systemPrompt,
+      max_tokens: 4096,
+      system: process.env.SYSTEM_PROMPT,
       messages: [
         {
           role: "user",
@@ -32,18 +29,32 @@ export class AnthropicService {
       ],
     });
 
-    const improvedText = message.content[0]?.text;
+    const responseText = message.content[0]?.text;
 
-    if (!improvedText) {
+    if (!responseText) {
       throw new AppError(ERROR_MESSAGES.AI_NO_RESPONSE, 500);
     }
 
+    const validation = validateAnalysisResponse(responseText);
+
+    if (!validation.valid) {
+      Logger.error("AnthropicService.analyzeIssue", "Invalid JSON response", {
+        error: validation.error,
+        rawResponse: responseText.substring(0, 200),
+      });
+      throw new AppError(
+        `AI returned invalid format: ${validation.error}`,
+        500
+      );
+    }
+
     Logger.info("AnthropicService.analyzeIssue", "Analysis completed", {
-      outputLength: improvedText.length,
       model: MODELS.HAIKU,
+      hasUserStory: !!validation.data.userStory,
+      criteriaCount: validation.data.acceptanceCriteria?.length || 0,
     });
 
-    return improvedText;
+    return validation.data;
   }
 
   buildPrompt(title, description) {
@@ -51,8 +62,6 @@ export class AnthropicService {
 
 Title: ${title}
 
-Description: ${description || "No description provided"}
-
-Please provide an improved version.`;
+Description: ${description || "No description provided"}`;
   }
 }

@@ -23,17 +23,15 @@ export class IssueResolver {
     return ErrorHandler.wrap("IssueResolver.improveBacklog", async () => {
       const { title, description, issueKey } = req.payload;
 
-      // Validation
       const validated = InputValidator.validateIssueData(
         title,
         description,
         issueKey
       );
 
-      // Analyse avec Claude
-      let improvedText;
+      let analysisJson;
       try {
-        improvedText = await this.anthropicService.analyzeIssue(
+        analysisJson = await this.anthropicService.analyzeIssue(
           validated.title,
           validated.description
         );
@@ -41,17 +39,16 @@ export class IssueResolver {
         throw new AppError(ERROR_MESSAGES.AI_ANALYSIS_ERROR, 500);
       }
 
-      // Sauvegarde
       const analysisData = await StorageService.saveAnalysis(
         validated.issueKey,
-        improvedText,
+        analysisJson,
         { model: MODELS.HAIKU }
       );
 
       return {
-        improvedText: analysisData.improvedText,
+        success: true,
+        analysis: analysisData.improvedText,
         date: analysisData.date,
-        additionalInfo: "Improvement made using Claude AI",
       };
     })();
   }

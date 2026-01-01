@@ -5,7 +5,7 @@ export const LIMITS = {
 };
 
 export const MODELS = {
-  HAIKU: "claude-3-haiku-20240307",
+  HAIKU: "claude-haiku-4-5-20251001",
   SONNET: "claude-4-5-20250929",
 };
 

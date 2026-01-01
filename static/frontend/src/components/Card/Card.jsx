@@ -3,13 +3,17 @@ import styles from "./Card.module.css";
 import { CONTENT } from "../../services/constants";
 
 export const Card = ({ suggestion, date, isOutdated }) => {
-  if (!suggestion || typeof suggestion === "string") return null;
+  if (!suggestion) return null;
 
-  const categories = [
-    { key: "satisfied", label: "Satisfied", className: styles.satisfied },
-    { key: "failed", label: "Failed", className: styles.failed },
-    { key: "partial", label: "Needs Improvement", className: styles.partial },
-  ];
+  // Vérifier que c'est le bon format INVEST
+  if (
+    !suggestion.satisfied ||
+    !suggestion.notSatisfied ||
+    !suggestion.partial
+  ) {
+    console.error("Invalid suggestion format:", suggestion);
+    return null;
+  }
 
   return (
     <div className={styles.cardContainer}>
@@ -21,17 +25,43 @@ export const Card = ({ suggestion, date, isOutdated }) => {
         <h4 className={styles.resultHeader}>✨ {CONTENT.CARD.TITLE}</h4>
 
         <div className={styles.sections}>
-          {categories.map(
-            (cat) =>
-              suggestion[cat.key]?.length > 0 && (
-                <div key={cat.key} className={cat.className}>
-                  {suggestion[cat.key].map((line, index) => (
-                    <p key={index} className={styles.analysisLine}>
-                      {line}
-                    </p>
-                  ))}
+          {/* Satisfied Criteria */}
+          {suggestion.satisfied.length > 0 && (
+            <div className={styles.satisfied}>
+              <h5 className={styles.sectionTitle}>✅ Strengths</h5>
+              {suggestion.satisfied.map((item, index) => (
+                <div key={index} className={styles.criterionBlock}>
+                  <p className={styles.criterionName}>{item.criterion}</p>
+                  <p className={styles.feedback}>{item.feedback}</p>
                 </div>
-              )
+              ))}
+            </div>
+          )}
+
+          {/* Not Satisfied Criteria */}
+          {suggestion.notSatisfied.length > 0 && (
+            <div className={styles.notSatisfied}>
+              <h5 className={styles.sectionTitle}>❌ Critical Issues</h5>
+              {suggestion.notSatisfied.map((item, index) => (
+                <div key={index} className={styles.criterionBlock}>
+                  <p className={styles.criterionName}>{item.criterion}</p>
+                  <p className={styles.feedback}>{item.feedback}</p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Partial Criteria */}
+          {suggestion.partial.length > 0 && (
+            <div className={styles.partial}>
+              <h5 className={styles.sectionTitle}>⚠️ Needs Improvement</h5>
+              {suggestion.partial.map((item, index) => (
+                <div key={index} className={styles.criterionBlock}>
+                  <p className={styles.criterionName}>{item.criterion}</p>
+                  <p className={styles.feedback}>{item.feedback}</p>
+                </div>
+              ))}
+            </div>
           )}
         </div>
 

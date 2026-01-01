@@ -19,6 +19,7 @@ export const Analyzer = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSyncing, setIsSyncing] = useState(true);
   const [isOutdated, setIsOutdated] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     view.getContext().then((context) => {
@@ -46,16 +47,18 @@ export const Analyzer = () => {
       try {
         const savedData = await invoke("getLastAnalysis", { issueKey });
 
-        if (savedData && savedData.improvedText) {
-          const sorted = parseAnalysisResponse(savedData.improvedText);
-          setSuggestion(sorted);
+        if (savedData && savedData.found && savedData.improvedText) {
+          const parsed = parseAnalysisResponse(savedData.improvedText);
 
-          setAnalysisDate(formatDate(savedData.date));
+          if (parsed) {
+            setSuggestion(parsed);
+            setAnalysisDate(formatDate(savedData.date));
 
-          if (lastUpdated) {
-            const hasBeenModified =
-              new Date(lastUpdated) > new Date(savedData.date);
-            setIsOutdated(hasBeenModified);
+            if (lastUpdated) {
+              const hasBeenModified =
+                new Date(lastUpdated) > new Date(savedData.date);
+              setIsOutdated(hasBeenModified);
+            }
           }
         }
       } catch (err) {
@@ -70,23 +73,36 @@ export const Analyzer = () => {
 
   const handleAnalyzeAction = async () => {
     if (!issueKey) return;
+
     setIsLoading(true);
+    setError(null);
 
     try {
       const currentIssue = await runAnalysis(issueKey);
+
       const result = await invoke("improveBacklog", {
         issueKey,
         title: currentIssue.title,
         description: parseDescription(currentIssue.description),
       });
 
-      const sortedAnalysis = parseAnalysisResponse(result.improvedText);
-      setSuggestion(sortedAnalysis);
+      if (!result.success) {
+        setError(result.error || "An error occurred during analysis");
+        return;
+      }
 
-      setAnalysisDate(formatDate(result.date));
-      setIsOutdated(false);
+      const parsed = parseAnalysisResponse(result.analysis);
+
+      if (parsed) {
+        setSuggestion(parsed);
+        setAnalysisDate(formatDate(result.date));
+        setIsOutdated(false);
+      } else {
+        setError("Invalid response format from AI");
+      }
     } catch (e) {
       console.error("Error during AI analysis:", e);
+      setError("An unexpected error occurred");
     } finally {
       setIsLoading(false);
     }
@@ -106,6 +122,8 @@ export const Analyzer = () => {
             isOutdated={isOutdated}
             hasAnalysis={!!suggestion}
           />
+
+          {error && <p className={styles.error}>❌ {error}</p>}
 
           <p className={styles.disclaimer}>{CONTENT.DISCLAIMER}</p>
         </>
