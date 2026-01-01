@@ -40,5 +40,8 @@
   },
   "devDependencies": {
     "prettier": "^3.7.4"
+  },
+  "resolutions": {
+    "@atlaskit/lozenge": "12.x.x"
   }
 }
