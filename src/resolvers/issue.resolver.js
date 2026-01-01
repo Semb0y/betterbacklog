@@ -29,6 +29,25 @@ export class IssueResolver {
         issueKey
       );
 
+      const existingAnalysis = await StorageService.getAnalysis(
+        validated.issueKey
+      );
+
+      if (existingAnalysis) {
+        const analysisDate = new Date(existingAnalysis.date);
+        const now = new Date();
+        const diffSeconds = (now - analysisDate) / 1000;
+
+        if (diffSeconds < 30) {
+          return {
+            success: false,
+            error: "Please wait at least 30 seconds between analyses",
+            type: "cooldown",
+            remainingSeconds: Math.ceil(30 - diffSeconds),
+          };
+        }
+      }
+
       let analysisJson;
       try {
         analysisJson = await this.anthropicService.analyzeIssue(
