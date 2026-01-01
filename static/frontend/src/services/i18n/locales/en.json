@@ -1,0 +1,63 @@
+{
+  "BUTTON": {
+    "ANALYZING": "Analyzing...",
+    "RE_ANALYZE": "Re-analyze ticket",
+    "ANALYZE": "Analyze ticket"
+  },
+
+  "CARD": {
+    "TITLE": "Analysis Results",
+    "STRENGTHS": "Strengths",
+    "CRITICAL_ISSUES": "Critical Issues",
+    "NEEDS_IMPROVEMENT": "Needs Improvement",
+    "FOOTER": "Last analyzed: "
+  },
+
+  "ERRORS": {
+    "NO_CHANGES": {
+      "TITLE": "No Changes Detected",
+      "MESSAGE": "This ticket hasn't been modified since the last analysis. The previous analysis is still valid."
+    },
+    "TIMEOUT": {
+      "TITLE": "Request Timeout",
+      "MESSAGE": "The AI service took too long to respond. This can happen with complex tickets."
+    },
+    "RATE_LIMIT": {
+      "TITLE": "Rate Limit Exceeded",
+      "MESSAGE": "Too many requests to the AI service. Please wait a moment."
+    },
+    "AI_UNAVAILABLE": {
+      "TITLE": "Service Unavailable",
+      "MESSAGE": "The AI service is temporarily unavailable. Please try again in a few minutes."
+    },
+    "NETWORK_ERROR": {
+      "TITLE": "Connection Error",
+      "MESSAGE": "Cannot connect to the server. Please check your internet connection and try again."
+    },
+    "INVALID_RESPONSE": {
+      "TITLE": "Invalid Response",
+      "MESSAGE": "The AI returned an unexpected format. Please try again."
+    },
+    "COOLDOWN": {
+      "TITLE": "Please Wait",
+      "MESSAGE_TEMPLATE": "Wait {seconds} second{plural} before retrying"
+    },
+    "UNKNOWN": {
+      "TITLE": "Error",
+      "MESSAGE": "An unexpected error occurred. Please try again."
+    }
+  },
+
+  "ACTIONS": {
+    "TRY_AGAIN": "Try Again",
+    "CLOSE": "Close"
+  },
+
+  "DISCLAIMER": "By clicking 'Analyze', you agree to send the ticket content to AI for analysis.",
+
+  "LOZENGE_APPEARANCE": {
+    "SUCCESS": "success",
+    "REMOVED": "removed",
+    "MOVED": "moved"
+  }
+}

@@ -1,8 +1,31 @@
 import React from "react";
-import styles from "./Card.module.css";
-import { CONTENT } from "../../services/constants";
+import { Box, Stack, Inline, xcss } from "@atlaskit/primitives";
+import Lozenge from "@atlaskit/lozenge";
+import { token } from "@atlaskit/tokens";
+import { useTranslations } from "../../services/hooks/useTranslations";
+
+const cardContainerStyles = xcss({
+  backgroundColor: "elevation.surface.raised",
+  padding: "space.200",
+  borderRadius: "border.radius",
+  borderWidth: "border.width",
+  borderStyle: "solid",
+  borderColor: "color.border",
+  marginTop: "space.200",
+  boxShadow: "elevation.shadow.raised",
+});
+
+const criterionBoxStyles = xcss({
+  padding: "space.150",
+  backgroundColor: "color.background.neutral.subtle",
+  borderRadius: "border.radius",
+  borderLeftWidth: "border.width.thick",
+  borderLeftStyle: "solid",
+});
 
 export const Card = ({ suggestion, date }) => {
+  const t = useTranslations();
+
   if (!suggestion) return null;
 
   if (
@@ -14,56 +37,106 @@ export const Card = ({ suggestion, date }) => {
     return null;
   }
 
+  const renderSection = (items, title, appearance, borderColor) => {
+    if (!items || items.length === 0) return null;
+
+    return (
+      <Stack space="space.150">
+        <Inline space="space.100" alignBlock="center">
+          <Lozenge appearance={appearance}>{title}</Lozenge>
+        </Inline>
+
+        <Stack space="space.100">
+          {items.map((item, index) => (
+            <Box
+              key={index}
+              xcss={[
+                criterionBoxStyles,
+                xcss({ borderLeftColor: borderColor }),
+              ]}
+            >
+              <Stack space="space.050">
+                <Box
+                  xcss={xcss({
+                    fontWeight: "font.weight.bold",
+                    fontSize: "14px",
+                  })}
+                >
+                  {item.criterion}
+                </Box>
+                <Box
+                  xcss={xcss({
+                    color: "color.text.subtle",
+                    fontSize: "13px",
+                    lineHeight: "20px",
+                  })}
+                >
+                  {item.feedback}
+                </Box>
+              </Stack>
+            </Box>
+          ))}
+        </Stack>
+      </Stack>
+    );
+  };
+
   return (
-    <div className={styles.cardContainer}>
-      <div className={styles.resultCard}>
-        <h4 className={styles.resultHeader}>✨ {CONTENT.CARD.TITLE}</h4>
+    <Box xcss={cardContainerStyles}>
+      <Stack space="space.300">
+        <Box
+          xcss={xcss({
+            fontSize: "16px",
+            fontWeight: "font.weight.semibold",
+            color: "color.text",
+          })}
+        >
+          ✨ {t.CARD.TITLE}
+        </Box>
 
-        <div className={styles.sections}>
-          {suggestion.satisfied.length > 0 && (
-            <div className={styles.satisfied}>
-              <h5 className={styles.sectionTitle}>✅ Strengths</h5>
-              {suggestion.satisfied.map((item, index) => (
-                <div key={index} className={styles.criterionBlock}>
-                  <p className={styles.criterionName}>{item.criterion}</p>
-                  <p className={styles.feedback}>{item.feedback}</p>
-                </div>
-              ))}
-            </div>
-          )}
+        {renderSection(
+          suggestion.satisfied,
+          t.CARD.STRENGTHS,
+          t.LOZENGE_APPEARANCE.SUCCESS,
+          token("color.border.success")
+        )}
 
-          {suggestion.notSatisfied.length > 0 && (
-            <div className={styles.notSatisfied}>
-              <h5 className={styles.sectionTitle}>❌ Critical Issues</h5>
-              {suggestion.notSatisfied.map((item, index) => (
-                <div key={index} className={styles.criterionBlock}>
-                  <p className={styles.criterionName}>{item.criterion}</p>
-                  <p className={styles.feedback}>{item.feedback}</p>
-                </div>
-              ))}
-            </div>
-          )}
+        {renderSection(
+          suggestion.notSatisfied,
+          t.CARD.CRITICAL_ISSUES,
+          t.LOZENGE_APPEARANCE.REMOVED,
+          token("color.border.danger")
+        )}
 
-          {suggestion.partial.length > 0 && (
-            <div className={styles.partial}>
-              <h5 className={styles.sectionTitle}>⚠️ Needs Improvement</h5>
-              {suggestion.partial.map((item, index) => (
-                <div key={index} className={styles.criterionBlock}>
-                  <p className={styles.criterionName}>{item.criterion}</p>
-                  <p className={styles.feedback}>{item.feedback}</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        {renderSection(
+          suggestion.partial,
+          t.CARD.NEEDS_IMPROVEMENT,
+          t.LOZENGE_APPEARANCE.MOVED,
+          token("color.border.warning")
+        )}
 
         {date && (
-          <div className={styles.footer}>
-            {CONTENT.CARD.FOOTER}
-            {date}
-          </div>
+          <Box
+            xcss={xcss({
+              borderTopWidth: "border.width",
+              borderTopStyle: "solid",
+              borderTopColor: "color.border",
+              paddingTop: "space.100",
+              textAlign: "right",
+            })}
+          >
+            <span
+              style={{
+                fontSize: "11px",
+                color: token("color.text.subtlest"),
+              }}
+            >
+              {t.CARD.FOOTER}
+              {date}
+            </span>
+          </Box>
         )}
-      </div>
-    </div>
+      </Stack>
+    </Box>
   );
 };

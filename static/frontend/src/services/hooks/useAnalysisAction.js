@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { invoke } from "@forge/bridge";
 import { parseDescription, formatDate, parseAnalysisResponse } from "../utils";
+import { getUserLocale } from "../i18n";
 
 export const useAnalysisAction = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -21,7 +22,6 @@ export const useAnalysisAction = () => {
         description: parseDescription(currentIssue.description),
       });
 
-      // Gestion d'erreur structurée
       if (!result.success) {
         setErrorDetails({
           type: result.type || "unknown",
@@ -33,13 +33,12 @@ export const useAnalysisAction = () => {
         return { success: false };
       }
 
-      // Parse et retourne le résultat
       const parsed = parseAnalysisResponse(result.analysis);
 
       if (parsed) {
-        const analysisDate = formatDate(result.date);
+        const locale = await getUserLocale();
+        const analysisDate = formatDate(result.date, locale);
 
-        // Callbacks pour mettre à jour le parent
         callbacks.onSuccess?.({
           suggestion: parsed,
           analysisDate,

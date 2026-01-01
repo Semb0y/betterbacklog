@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { view, invoke } from "@forge/bridge";
+import { Stack, Box, xcss } from "@atlaskit/primitives";
 import { useIssueData } from "../../../services/hooks/useIssueData";
 import { useAnalysisSync } from "../../../services/hooks/useAnalysisSync";
+import { useTranslations } from "../../../services/hooks/useTranslations";
+import { getUserLocale } from "../../../services/i18n";
 import {
   parseDescription,
   parseAnalysisResponse,
@@ -9,9 +12,13 @@ import {
 } from "../../../services/utils";
 import { AnalysisActions } from "../AnalysisActions/AnalysisActions";
 import { Card } from "../../Card/Card";
-import styles from "./Analyzer.module.css";
+
+const containerStyles = xcss({
+  paddingTop: "space.100",
+});
 
 export const Analyzer = () => {
+  const t = useTranslations();
   const [issueKey, setIssueKey] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [errorDetails, setErrorDetails] = useState(null);
@@ -40,7 +47,6 @@ export const Analyzer = () => {
 
     try {
       const currentIssue = await runAnalysis(issueKey);
-
       const savedAnalysis = await invoke("getLastAnalysis", { issueKey });
 
       if (savedAnalysis && savedAnalysis.found) {
@@ -50,8 +56,7 @@ export const Analyzer = () => {
         if (issueModifiedAt <= lastAnalyzedAt) {
           setErrorDetails({
             type: "no_changes",
-            userMessage:
-              "This ticket hasn't been modified since the last analysis. The previous analysis is still valid.",
+            userMessage: t.ERRORS.NO_CHANGES.MESSAGE,
             action: "none",
           });
           return;
@@ -79,13 +84,13 @@ export const Analyzer = () => {
 
       if (parsed) {
         setSuggestion(parsed);
-        setAnalysisDate(formatDate(result.date));
+        const locale = getUserLocale();
+        setAnalysisDate(formatDate(result.date, locale));
         setErrorDetails(null);
       } else {
         setErrorDetails({
           type: "invalid_response",
-          userMessage:
-            "The AI returned an unexpected format. Please try again.",
+          userMessage: t.ERRORS.INVALID_RESPONSE.MESSAGE,
           action: "retry",
         });
       }
@@ -94,8 +99,7 @@ export const Analyzer = () => {
 
       setErrorDetails({
         type: "network_error",
-        userMessage:
-          "Cannot connect to the server. Please check your internet connection and try again.",
+        userMessage: t.ERRORS.NETWORK_ERROR.MESSAGE,
         action: "retry",
       });
     } finally {
@@ -106,7 +110,7 @@ export const Analyzer = () => {
   const isActionDisabled = !issueKey || isLoading || isSyncing;
 
   return (
-    <div className={styles.container}>
+    <Stack xcss={containerStyles}>
       <AnalysisActions
         onAnalyze={handleAnalyze}
         disabled={isActionDisabled}
@@ -117,6 +121,17 @@ export const Analyzer = () => {
       />
 
       {suggestion && <Card suggestion={suggestion} date={analysisDate} />}
-    </div>
+
+      <Box
+        xcss={xcss({
+          fontSize: "11px",
+          color: "color.text.subtlest",
+          fontStyle: "italic",
+          paddingTop: "space.100",
+        })}
+      >
+        {t.DISCLAIMER}
+      </Box>
+    </Stack>
   );
 };

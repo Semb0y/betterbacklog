@@ -1,74 +1,65 @@
 import React from "react";
-import styles from "./ErrorMessage.module.css";
+import SectionMessage from "@atlaskit/section-message";
+import { useTranslations } from "../../services/hooks/useTranslations";
 
 export const ErrorMessage = ({ error, onRetry, onClose }) => {
+  const t = useTranslations();
+
   if (!error) return null;
 
-  const getErrorIcon = (type) => {
+  const getErrorContent = (type) => {
+    const errorType = type?.toUpperCase();
+    const errorConfig = t.ERRORS[errorType] || t.ERRORS.UNKNOWN;
+    return {
+      title: errorConfig.TITLE,
+      message: error.userMessage || errorConfig.MESSAGE,
+    };
+  };
+
+  const getAppearance = (type) => {
     switch (type) {
       case "timeout":
-        return "⏱️";
-      case "cooldown":
-        return "⏳";
       case "rate_limit":
-        return "🚦";
-      case "ai_unavailable":
-        return "🔧";
-      case "invalid_response":
-        return "⚠️";
-      case "contact_admin":
-        return "📞";
+      case "cooldown":
+        return "warning";
+
+      case "no_changes":
+        return "information";
+
       default:
-        return "❌";
+        return "error";
     }
   };
 
-  const getActionButton = (action) => {
-    switch (action) {
-      case "retry":
-        return onRetry ? (
-          <button onClick={onRetry} className={styles.retryButton}>
-            🔄 Try Again
-          </button>
-        ) : null;
+  const { title, message } = getErrorContent(error.type);
+  const appearance = getAppearance(error.type);
 
-      case "wait":
-        return error.remainingSeconds ? (
-          <p className={styles.countdown}>
-            ⏳ Wait {error.remainingSeconds} seconds
-          </p>
-        ) : null;
+  const actions = [];
 
-      case "retry_later":
-        return <p className={styles.hint}>💡 Try again in a few minutes</p>;
+  if (error.action === "retry" && onRetry) {
+    actions.push({
+      text: t.ACTIONS.TRY_AGAIN,
+      onClick: onRetry,
+    });
+  }
 
-      case "contact_admin":
-        return (
-          <p className={styles.hint}>
-            📞 If this persists, contact your Jira administrator
-          </p>
-        );
+  if (error.remainingSeconds) {
+    const plural = error.remainingSeconds !== 1 ? "s" : "";
+    const countdownMessage = t.ERRORS.COOLDOWN.MESSAGE_TEMPLATE.replace(
+      "{seconds}",
+      error.remainingSeconds
+    ).replace("{plural}", plural);
 
-      default:
-        return null;
-    }
-  };
+    return (
+      <SectionMessage appearance="warning" title={t.ERRORS.COOLDOWN.TITLE}>
+        <p>{countdownMessage}</p>
+      </SectionMessage>
+    );
+  }
 
   return (
-    <div className={styles.errorContainer}>
-      <div className={styles.errorHeader}>
-        <span className={styles.icon}>{getErrorIcon(error.type)}</span>
-        <span className={styles.title}>Analysis Failed</span>
-        {onClose && (
-          <button onClick={onClose} className={styles.closeButton}>
-            ×
-          </button>
-        )}
-      </div>
-
-      <p className={styles.message}>{error.userMessage || error.error}</p>
-
-      <div className={styles.actions}>{getActionButton(error.action)}</div>
-    </div>
+    <SectionMessage appearance={appearance} title={title} actions={actions}>
+      <p>{message}</p>
+    </SectionMessage>
   );
 };

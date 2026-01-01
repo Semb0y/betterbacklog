@@ -1,37 +1,32 @@
 import React from "react";
-import styles from "./Button.module.css";
+import AtlaskitButton from "@atlaskit/button";
+import Spinner from "@atlaskit/spinner";
+import { useTranslations } from "../../services/hooks/useTranslations";
 
 export const Button = ({ onClick, disabled, loading, hasAnalysis }) => {
+  const t = useTranslations();
+
   const getButtonText = () => {
-    if (loading) return "Analyzing...";
-    if (hasAnalysis) return "Re-analyze ticket";
-    return "Analyze ticket";
+    if (loading) return t.BUTTON.ANALYZING;
+    if (hasAnalysis) return t.BUTTON.RE_ANALYZE;
+    return t.BUTTON.ANALYZE;
   };
 
   const getIcon = () => {
-    if (hasAnalysis) return "🔄";
-    return "✨";
+    if (loading) return <Spinner size="small" />;
+    if (hasAnalysis) return <span>🔄</span>;
+    return <span>✨</span>;
   };
 
   return (
-    <button
+    <AtlaskitButton
       onClick={onClick}
-      disabled={disabled || loading}
-      className={`${styles.button} ${loading ? styles.isLoading : ""} ${disabled ? styles.isDisabled : ""}`}
+      isDisabled={disabled || loading}
+      appearance="primary"
+      shouldFitContainer={false}
+      iconBefore={getIcon()}
     >
-      <span className={styles.content}>
-        {loading ? (
-          <>
-            <span className={styles.spinner} />
-            <span>{getButtonText()}</span>
-          </>
-        ) : (
-          <>
-            <span className={styles.icon}>{getIcon()}</span>
-            <span>{getButtonText()}</span>
-          </>
-        )}
-      </span>
-    </button>
+      {getButtonText()}
+    </AtlaskitButton>
   );
 };

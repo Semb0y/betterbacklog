@@ -1,10 +1,3 @@
-/**
- * Parse la description Jira au format ADF (Atlassian Document Format)
- * Convertit en texte simple pour l'envoi à Claude
- *
- * @param {object} description - Description au format ADF
- * @returns {string} Description en texte simple
- */
 export const parseDescription = (description) => {
   if (!description?.content) {
     return "No description provided";
@@ -16,10 +9,6 @@ export const parseDescription = (description) => {
     .join("\n\n");
 };
 
-/**
- * Parse un bloc ADF individuel
- * @private
- */
 const parseADFBlock = (block) => {
   switch (block.type) {
     case "paragraph":
@@ -46,10 +35,6 @@ const parseADFBlock = (block) => {
   }
 };
 
-/**
- * Parse un paragraphe
- * @private
- */
 const parseParagraph = (block) => {
   return (
     block.content
@@ -64,10 +49,6 @@ const parseParagraph = (block) => {
   );
 };
 
-/**
- * Parse une liste (bullet ou ordonnée)
- * @private
- */
 const parseList = (block) => {
   return (
     block.content
@@ -84,10 +65,6 @@ const parseList = (block) => {
   );
 };
 
-/**
- * Parse un bloc de code
- * @private
- */
 const parseCodeBlock = (block) => {
   const code = block.content?.[0]?.text || "";
   const language = block.attrs?.language || "";
@@ -96,20 +73,12 @@ const parseCodeBlock = (block) => {
     : `\`\`\`\n${code}\n\`\`\``;
 };
 
-/**
- * Parse un heading
- * @private
- */
 const parseHeading = (block) => {
   const text = block.content?.map((item) => item.text).join("") || "";
   const level = block.attrs?.level || 1;
   return `${"#".repeat(level)} ${text}`;
 };
 
-/**
- * Parse un panel (info, warning, error, success)
- * @private
- */
 const parsePanel = (block) => {
   const panelType = block.attrs?.panelType || "info";
   const content =
@@ -118,10 +87,6 @@ const parsePanel = (block) => {
   return `[${panelType.toUpperCase()}]\n${content}`;
 };
 
-/**
- * Parse une blockquote
- * @private
- */
 const parseBlockquote = (block) => {
   const content =
     block.content?.map((item) => parseADFBlock(item)).join("\n") || "";
@@ -132,16 +97,11 @@ const parseBlockquote = (block) => {
     .join("\n");
 };
 
-/**
- * Formate une date selon la locale
- *
- * @param {Date|string} date - Date à formater
- * @param {string} locale - Locale (ex: "fr-FR", "en-US")
- * @returns {string} Date formatée
- */
-export const formatDate = (date = new Date(), locale = "en-US") => {
+export const formatDate = (date = new Date(), locale = "en_US") => {
   try {
-    return new Intl.DateTimeFormat(locale, {
+    const normalizedLocale = locale.replace("_", "-");
+
+    return new Intl.DateTimeFormat(normalizedLocale, {
       day: "numeric",
       month: "short",
       year: "numeric",
@@ -154,19 +114,11 @@ export const formatDate = (date = new Date(), locale = "en-US") => {
   }
 };
 
-/**
- * Parse la réponse de l'IA (format JSON)
- *
- * @param {object|string} aiResponse - Réponse de Claude
- * @returns {object|null} Objet parsé avec satisfied/notSatisfied/partial
- */
 export const parseAnalysisResponse = (aiResponse) => {
-  // ✅ Déjà un objet valide
   if (typeof aiResponse === "object" && aiResponse !== null) {
     return validateAnalysisStructure(aiResponse) ? aiResponse : null;
   }
 
-  // ✅ Essayer de parser le JSON
   if (typeof aiResponse === "string") {
     try {
       const parsed = JSON.parse(aiResponse);
@@ -180,10 +132,6 @@ export const parseAnalysisResponse = (aiResponse) => {
   return null;
 };
 
-/**
- * Valide la structure d'une réponse d'analyse
- * @private
- */
 const validateAnalysisStructure = (response) => {
   return (
     response &&

@@ -1,0 +1,63 @@
+{
+  "BUTTON": {
+    "ANALYZING": "Analyse en cours...",
+    "RE_ANALYZE": "Ré-analyser le ticket",
+    "ANALYZE": "Analyser le ticket"
+  },
+
+  "CARD": {
+    "TITLE": "Résultats de l'analyse",
+    "STRENGTHS": "Points forts",
+    "CRITICAL_ISSUES": "Problèmes critiques",
+    "NEEDS_IMPROVEMENT": "À améliorer",
+    "FOOTER": "Dernière analyse : "
+  },
+
+  "ERRORS": {
+    "NO_CHANGES": {
+      "TITLE": "Aucun changement détecté",
+      "MESSAGE": "Ce ticket n'a pas été modifié depuis la dernière analyse. L'analyse précédente est toujours valide."
+    },
+    "TIMEOUT": {
+      "TITLE": "Délai d'attente dépassé",
+      "MESSAGE": "Le service IA a mis trop de temps à répondre. Cela peut arriver avec des tickets complexes."
+    },
+    "RATE_LIMIT": {
+      "TITLE": "Limite de requêtes atteinte",
+      "MESSAGE": "Trop de requêtes envoyées au service IA. Veuillez patienter un instant."
+    },
+    "AI_UNAVAILABLE": {
+      "TITLE": "Service indisponible",
+      "MESSAGE": "Le service IA est temporairement indisponible. Veuillez réessayer dans quelques minutes."
+    },
+    "NETWORK_ERROR": {
+      "TITLE": "Erreur de connexion",
+      "MESSAGE": "Impossible de se connecter au serveur. Vérifiez votre connexion Internet et réessayez."
+    },
+    "INVALID_RESPONSE": {
+      "TITLE": "Réponse invalide",
+      "MESSAGE": "L'IA a retourné un format inattendu. Veuillez réessayer."
+    },
+    "COOLDOWN": {
+      "TITLE": "Veuillez patienter",
+      "MESSAGE_TEMPLATE": "Attendez {seconds} seconde{plural} avant de réessayer"
+    },
+    "UNKNOWN": {
+      "TITLE": "Erreur",
+      "MESSAGE": "Une erreur inattendue s'est produite. Veuillez réessayer."
+    }
+  },
+
+  "ACTIONS": {
+    "TRY_AGAIN": "Réessayer",
+    "CLOSE": "Fermer"
+  },
+
+  "DISCLAIMER": "En cliquant sur 'Analyser', vous acceptez d'envoyer le contenu du ticket à l'IA pour analyse.",
+
+  "LOZENGE_APPEARANCE": {
+    "SUCCESS": "success",
+    "REMOVED": "removed",
+    "MOVED": "moved"
+  }
+}

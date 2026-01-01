@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "../../Button/Button";
 import { ErrorMessage } from "../../ErrorMessage/ErrorMessage";
-import { CONTENT } from "../../../services/constants";
+import { useTranslations } from "../../../services/hooks/useTranslations";
 import styles from "./AnalysisActions.module.css";
 
 export const AnalysisActions = ({
@@ -12,6 +12,8 @@ export const AnalysisActions = ({
   errorDetails,
   onClearError,
 }) => {
+  const t = useTranslations();
+
   return (
     <div className={styles.actionsContainer}>
       <Button
@@ -26,8 +28,6 @@ export const AnalysisActions = ({
         onRetry={onAnalyze}
         onClose={onClearError}
       />
-
-      <p className={styles.disclaimer}>{CONTENT.DISCLAIMER}</p>
     </div>
   );
 };

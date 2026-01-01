@@ -1,6 +1,3 @@
-/**
- * Logger centralisé pour un format cohérent et sécurisé
- */
 export class Logger {
   static log(context, level, message, data = {}) {
     const timestamp = new Date().toISOString();

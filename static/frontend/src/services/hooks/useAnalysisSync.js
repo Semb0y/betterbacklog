@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { invoke } from "@forge/bridge";
 import { parseAnalysisResponse, formatDate } from "../utils";
+import { getUserLocale } from "../i18n";
 
 export const useAnalysisSync = (issueKey) => {
   const [suggestion, setSuggestion] = useState(null);
@@ -23,7 +24,8 @@ export const useAnalysisSync = (issueKey) => {
 
           if (parsed) {
             setSuggestion(parsed);
-            setAnalysisDate(formatDate(savedData.date));
+            const locale = await getUserLocale();
+            setAnalysisDate(formatDate(savedData.date, locale));
           }
         }
       } catch (err) {

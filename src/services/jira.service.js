@@ -1,4 +1,4 @@
-import { requestJira, route } from "@forge/api";
+import api, { requestJira, route } from "@forge/api";
 import { ERROR_MESSAGES } from "../config/constants.js";
 import { AppError } from "../utils/error.handler.js";
 import { Logger } from "../utils/logger.js";
@@ -46,5 +46,31 @@ export class JiraService {
     });
 
     return issueData;
+  }
+
+  static async getUserLocale() {
+    try {
+      const response = await api
+        .asUser()
+        .requestJira(route`/rest/api/3/myself`, {
+          headers: {
+            Accept: "application/json",
+          },
+        });
+
+      if (!response.ok) {
+        console.error("Jira API error:", response.status, response.statusText);
+        const text = await response.text();
+        console.error("Response:", text);
+        return "en_US";
+      }
+
+      const data = await response.json();
+      console.log("User data:", data);
+      return data.locale || "en_US";
+    } catch (error) {
+      console.error("Failed to get user locale:", error);
+      return "en_US";
+    }
   }
 }
