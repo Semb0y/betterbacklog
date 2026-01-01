@@ -8,7 +8,6 @@ export const AnalysisActions = ({
   onAnalyze,
   disabled,
   loading,
-  isOutdated,
   hasAnalysis,
   errorDetails,
   onClearError,
@@ -19,7 +18,6 @@ export const AnalysisActions = ({
         onClick={onAnalyze}
         disabled={disabled}
         loading={loading}
-        isOutdated={isOutdated}
         hasAnalysis={hasAnalysis}
       />
 

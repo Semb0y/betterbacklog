@@ -2,10 +2,9 @@ import { useState, useEffect } from "react";
 import { invoke } from "@forge/bridge";
 import { parseAnalysisResponse, formatDate } from "../utils";
 
-export const useAnalysisSync = (issueKey, lastUpdated) => {
+export const useAnalysisSync = (issueKey) => {
   const [suggestion, setSuggestion] = useState(null);
   const [analysisDate, setAnalysisDate] = useState(null);
-  const [isOutdated, setIsOutdated] = useState(false);
   const [isSyncing, setIsSyncing] = useState(true);
 
   useEffect(() => {
@@ -25,12 +24,6 @@ export const useAnalysisSync = (issueKey, lastUpdated) => {
           if (parsed) {
             setSuggestion(parsed);
             setAnalysisDate(formatDate(savedData.date));
-
-            if (lastUpdated) {
-              const hasBeenModified =
-                new Date(lastUpdated) > new Date(savedData.date);
-              setIsOutdated(hasBeenModified);
-            }
           }
         }
       } catch (err) {
@@ -41,15 +34,13 @@ export const useAnalysisSync = (issueKey, lastUpdated) => {
     };
 
     syncStorageWithJira();
-  }, [issueKey, lastUpdated]);
+  }, [issueKey]);
 
   return {
     suggestion,
     setSuggestion,
     analysisDate,
     setAnalysisDate,
-    isOutdated,
-    setIsOutdated,
     isSyncing,
   };
 };

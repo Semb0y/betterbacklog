@@ -27,16 +27,6 @@
   border-color: var(--ds-border-information-hovered, #0065ff);
 }
 
-/* État quand le ticket est modifié (Orange) */
-.isOutdated {
-  border-color: var(--ds-border-warning, #ff8b00) !important;
-  color: var(--ds-text-warning, #974f0c) !important;
-}
-
-.isOutdated:hover {
-  border-color: var(--ds-border-warning-hovered, #ff991f) !important;
-}
-
 .isDisabled {
   background-color: var(--ds-background-disabled, #f4f5f7) !important;
   border-color: var(--ds-border-disabled, #dfe1e6) !important;

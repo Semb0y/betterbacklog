@@ -1,38 +1,26 @@
-import React, { useMemo } from "react";
+import React from "react";
 import styles from "./Button.module.css";
-import { CONTENT } from "../../services/constants";
 
-export const Button = ({
-  onClick,
-  disabled,
-  loading,
-  isOutdated,
-  hasAnalysis,
-  isRetrying, // ✅ Nouveau prop
-}) => {
+export const Button = ({ onClick, disabled, loading, hasAnalysis }) => {
   const getButtonText = () => {
-    if (isRetrying) return "Retrying...";
     if (loading) return "Analyzing...";
-    if (hasAnalysis && !isOutdated) return "Analysis up to date";
-    if (isOutdated) return "Issue modified - Re-analyze";
-    return "Improve ticket";
+    if (hasAnalysis) return "Re-analyze ticket";
+    return "Analyze ticket";
   };
 
   const getIcon = () => {
-    if (isRetrying) return "🔄";
-    if (isOutdated) return "🔄";
-    if (hasAnalysis && !isOutdated) return "✅";
+    if (hasAnalysis) return "🔄";
     return "✨";
   };
 
   return (
     <button
       onClick={onClick}
-      disabled={disabled || loading || isRetrying}
-      className={`${styles.button} ${loading || isRetrying ? styles.isLoading : ""}`}
+      disabled={disabled || loading}
+      className={`${styles.button} ${loading ? styles.isLoading : ""} ${disabled ? styles.isDisabled : ""}`}
     >
       <span className={styles.content}>
-        {loading || isRetrying ? (
+        {loading ? (
           <>
             <span className={styles.spinner} />
             <span>{getButtonText()}</span>

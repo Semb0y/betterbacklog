@@ -2,10 +2,9 @@ import React from "react";
 import styles from "./Card.module.css";
 import { CONTENT } from "../../services/constants";
 
-export const Card = ({ suggestion, date, isOutdated }) => {
+export const Card = ({ suggestion, date }) => {
   if (!suggestion) return null;
 
-  // Vérifier que c'est le bon format INVEST
   if (
     !suggestion.satisfied ||
     !suggestion.notSatisfied ||
@@ -17,15 +16,10 @@ export const Card = ({ suggestion, date, isOutdated }) => {
 
   return (
     <div className={styles.cardContainer}>
-      <p className={isOutdated ? styles.warningText : styles.infoText}>
-        {isOutdated ? CONTENT.MESSAGES.WARNING : CONTENT.MESSAGES.SUCCESS}
-      </p>
-
       <div className={styles.resultCard}>
         <h4 className={styles.resultHeader}>✨ {CONTENT.CARD.TITLE}</h4>
 
         <div className={styles.sections}>
-          {/* Satisfied Criteria */}
           {suggestion.satisfied.length > 0 && (
             <div className={styles.satisfied}>
               <h5 className={styles.sectionTitle}>✅ Strengths</h5>
@@ -38,7 +32,6 @@ export const Card = ({ suggestion, date, isOutdated }) => {
             </div>
           )}
 
-          {/* Not Satisfied Criteria */}
           {suggestion.notSatisfied.length > 0 && (
             <div className={styles.notSatisfied}>
               <h5 className={styles.sectionTitle}>❌ Critical Issues</h5>
@@ -51,7 +44,6 @@ export const Card = ({ suggestion, date, isOutdated }) => {
             </div>
           )}
 
-          {/* Partial Criteria */}
           {suggestion.partial.length > 0 && (
             <div className={styles.partial}>
               <h5 className={styles.sectionTitle}>⚠️ Needs Improvement</h5>
