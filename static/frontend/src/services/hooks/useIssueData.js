@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { fetchAnalysis } from "../api/index";
+import { fetchAnalysis } from "../../api/index";
 
 export const useIssueData = () => {
   const [issueData, setIssueData] = useState(null);
