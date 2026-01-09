@@ -3,6 +3,7 @@ import { MODELS, ERROR_MESSAGES } from "../config/constants.js";
 import { AppError } from "../utils/error.handler.js";
 import { Logger } from "../utils/logger.js";
 import { validateAnalysisResponse } from "../validators.js";
+import { JiraService } from "./jira.service.js";
 
 export class AnthropicService {
   constructor() {
@@ -67,10 +68,13 @@ export class AnthropicService {
   async analyzeIssue(title, description) {
     const startTime = Date.now();
 
+    const userLocale = await JiraService.getUserLocale();
+
     Logger.info("AnthropicService.analyzeIssue", "Starting analysis", {
       titleLength: title.length,
       descriptionLength: description.length,
       model: MODELS.HAIKU,
+      userLocale,
     });
 
     const message = await this.callClaudeWithRetry(
@@ -80,7 +84,7 @@ export class AnthropicService {
       [
         {
           role: "user",
-          content: this.buildPrompt(title, description),
+          content: this.buildPrompt(title, description, userLocale),
         },
       ],
       1
@@ -112,6 +116,7 @@ export class AnthropicService {
 
     Logger.logAPICall("AnthropicService.analyzeIssue", "Analysis", startTime, {
       model: MODELS.HAIKU,
+      userLocale,
       satisfiedCount: validation.data.satisfied?.length || 0,
       notSatisfiedCount: validation.data.notSatisfied?.length || 0,
       partialCount: validation.data.partial?.length || 0,
@@ -121,11 +126,17 @@ export class AnthropicService {
     return validation.data;
   }
 
-  buildPrompt(title, description) {
+  buildPrompt(title, description, userLocale = "en_US") {
+    const lang = userLocale.split("_")[0].toLowerCase();
+    const isFrench = lang === "fr";
+    const languageName = isFrench ? "French" : "English";
+
     return `Analyze and improve this Jira issue:
 
 Title: ${title}
 
-Description: ${description || "No description provided"}`;
+Description: ${description || "No description provided"}
+
+CRITICAL: You MUST respond in ${languageName}. All feedback, criterion names, and explanations must be written entirely in ${languageName}.`;
   }
 }

@@ -58,14 +58,6 @@ export const Card = ({ suggestion, date }) => {
               <Stack space="space.050">
                 <Box
                   xcss={xcss({
-                    fontWeight: "font.weight.bold",
-                    fontSize: "14px",
-                  })}
-                >
-                  {item.criterion}
-                </Box>
-                <Box
-                  xcss={xcss({
                     color: "color.text.subtle",
                     fontSize: "13px",
                     lineHeight: "20px",
