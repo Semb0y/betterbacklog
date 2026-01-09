@@ -18,32 +18,27 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: "npm"
 
       - name: Install Root Dependencies
-        run: npm install
+        run: npm ci
+
+      - name: Install Frontend Dependencies
+        working-directory: static/frontend
+        run: npm ci
 
       - name: Build Frontend
-        run: |
-          cd static/frontend
-          npm install
-          npm run build
+        working-directory: static/frontend
+        run: npm run build
 
-      - name: Install Forge CLI and Configure
-        run: |
-          npm install -g @forge/cli
-          forge settings set usage-analytics true
+      - name: Install Forge CLI
+        run: npm install -g @forge/cli
 
-      - name: Deploy to Forge (Staging)
-        run: |
-          forge deploy -e staging --non-interactive
-        env:
-          FORGE_EMAIL: ${{ secrets.FORGE_EMAIL }}
-          FORGE_API_TOKEN: ${{ secrets.FORGE_API_TOKEN }}
+      - name: Configure Forge CLI
+        run: forge settings set usage-analytics true
 
-      - name: Set Environment Variables
-        run: |
-          forge variables set --encrypt ANTHROPIC_API_KEY "${{ secrets.ANTHROPIC_API_KEY }}" -e staging --non-interactive
-          forge variables set SYSTEM_PROMPT "$(cat prompt.txt)" -e staging --non-interactive
+      - name: Deploy to Forge
+        run: forge deploy -e staging
         env:
           FORGE_EMAIL: ${{ secrets.FORGE_EMAIL }}
           FORGE_API_TOKEN: ${{ secrets.FORGE_API_TOKEN }}
