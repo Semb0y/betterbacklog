@@ -296,4 +296,3 @@ Pour toute question ou problème :
 ---
 
 Fait avec ❤️ par Semb0y(https://github.com/Semb0y)
-# Test CI
