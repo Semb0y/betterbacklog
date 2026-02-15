@@ -3,8 +3,6 @@ app:
     name: nodejs20.x
   id: ari:cloud:ecosystem::app/b39b8559-701a-4217-a1dc-6dc91f4e3b3d
 
-version: 1.0.0
-
 modules:
   jira:issuePanel:
     - key: betterbacklog-jira-panel
