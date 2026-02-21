@@ -3,11 +3,6 @@ app:
     name: nodejs20.x
   id: ari:cloud:ecosystem::app/b39b8559-701a-4217-a1dc-6dc91f4e3b3d
 
-  privacy:
-    policyUrl: https://semb0y.github.io/betterbacklog/privacy
-  terms:
-    url: https://semb0y.github.io/betterbacklog/terms
-
 modules:
   jira:issuePanel:
     - key: betterbacklog-jira-panel
@@ -25,8 +20,6 @@ modules:
 resources:
   - key: main
     path: static/frontend/build
-    # tunnel:
-    #   port: 3000
 
 permissions:
   external:
