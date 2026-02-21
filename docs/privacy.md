@@ -11,11 +11,7 @@ LAARABI Consulting ("we", "our", or "us") operates the BetterBacklog application
 
 ### Data We Access
 
-When you use BetterBacklog, we access the following data from your Jira instance:
-
-- **Jira Issue Titles**: To analyze the quality of user stories
-- **Jira Issue Descriptions**: To evaluate completeness against INVEST criteria
-- **User Locale**: To provide localized responses in your language (French/English)
+Jira Issue Titles and Jira Issue Descriptions: To analyze the quality of user stories
 
 ### Data We Process
 
@@ -27,9 +23,8 @@ When you use BetterBacklog, we access the following data from your Jira instance
 
 We use the collected data solely to:
 
-1. Analyze Jira tickets against INVEST criteria (Independent, Negotiable, Valuable, Estimable, Small, Testable)
-2. Provide actionable feedback to improve ticket quality
-3. Display analysis results in your Jira interface
+1. Analyze Jira tickets to provide actionable feedback to improve ticket quality
+2. Display analysis results in your Jira interface
 
 ## Third-Party Services
 

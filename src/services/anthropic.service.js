@@ -131,11 +131,21 @@ export class AnthropicService {
     const isFrench = lang === "fr";
     const languageName = isFrench ? "French" : "English";
 
-    return `Analyze and improve this Jira issue:
+    const systemPrompt = process.env.SYSTEM_PROMPT || "";
+
+    return `${systemPrompt}
+
+---
+
+Analyze this Jira issue:
 
 Title: ${title}
 
 Description: ${description || "No description provided"}
+
+---
+
+${systemPrompt}
 
 CRITICAL: You MUST respond in ${languageName}. All feedback, criterion names, and explanations must be written entirely in ${languageName}.`;
   }
