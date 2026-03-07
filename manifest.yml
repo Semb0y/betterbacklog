@@ -1,7 +1,7 @@
 app:
   runtime:
     name: nodejs20.x
-  id: ari:cloud:ecosystem::app/b39b8559-701a-4217-a1dc-6dc91f4e3b3d
+  id: ari:cloud:ecosystem::app/3f533a1c-74b9-47a6-b3af-0a4931f5edae
 
 modules:
   jira:issuePanel:
